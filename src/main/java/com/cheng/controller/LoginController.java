@@ -32,11 +32,8 @@ public class LoginController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse response = loginService.login(loginRequest);
         
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().body(response);
-        }
+        // 无论成功还是失败都返回200状态码，让前端根据response中的success字段判断
+        return ResponseEntity.ok(response);
     }
 
     /**
