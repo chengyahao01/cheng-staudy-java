@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表板 - 登录系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .dashboard-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .user-details h3 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .user-details p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="username">管理员</h3>
+                    <p>欢迎回来！</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                退出登录
+            </button>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    系统状态
+                </div>
+                <div class="card-content">
+                    <p>✅ 登录系统运行正常</p>
+                    <p>✅ Token验证功能正常</p>
+                    <p>✅ 用户认证成功</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-shield-alt"></i>
+                    安全信息
+                </div>
+                <div class="card-content">
+                    <p>🔐 当前Token: <span id="currentToken">已获取</span></p>
+                    <p>🕒 登录时间: <span id="loginTime"></span></p>
+                    <p>🌐 登录IP: 127.0.0.1</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-cog"></i>
+                    系统设置
+                </div>
+                <div class="card-content">
+                    <p>⚙️ 用户管理</p>
+                    <p>🔧 系统配置</p>
+                    <p>📊 数据统计</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const username = localStorage.getItem('username');
+            
+            if (!token || !username) {
+                alert('请先登录！');
+                window.location.href = '/index.html';
+                return;
+            }
+            
+            // 显示用户信息
+            document.getElementById('username').textContent = username;
+            document.getElementById('currentToken').textContent = token.substring(0, 16) + '...';
+            document.getElementById('loginTime').textContent = new Date().toLocaleString();
+        }
+        
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                window.location.href = '/index.html';
+            }
+        }
+        
+        // 页面加载时检查认证
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+    </script>
+</body>
+</html> 
